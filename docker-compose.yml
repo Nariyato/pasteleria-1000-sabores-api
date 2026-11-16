@@ -1,0 +1,32 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: pasteleria-db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-root}
+      MYSQL_DATABASE: pasteleria
+    ports:
+      - "3306:3306"
+    volumes:
+      - pasteleria-datos:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${DB_PASSWORD:-root}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  api:
+    build: .
+    container_name: pasteleria-api
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:mysql://db:3306/pasteleria?serverTimezone=America/Santiago&useSSL=false&allowPublicKeyRetrieval=true
+      DB_USER: root
+      DB_PASSWORD: ${DB_PASSWORD:-root}
+    ports:
+      - "8089:8089"
+
+volumes:
+  pasteleria-datos:
