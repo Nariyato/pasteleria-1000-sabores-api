@@ -17,3 +17,6 @@ target/
 # Logs y variables de entorno
 *.log
 .env
+
+# Guías de trabajo locales (no van al repositorio)
+docs/
