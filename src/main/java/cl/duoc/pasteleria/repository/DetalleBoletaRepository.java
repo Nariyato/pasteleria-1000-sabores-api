@@ -11,4 +11,6 @@ import cl.duoc.pasteleria.model.DetalleBoleta;
 public interface DetalleBoletaRepository extends JpaRepository<DetalleBoleta, Long> {
 
     List<DetalleBoleta> findByBoletaId(Long boletaId);
+
+    boolean existsByProducto_Codigo(String codigo);
 }
