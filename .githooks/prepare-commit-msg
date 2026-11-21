@@ -1,0 +1,12 @@
+#!/bin/sh
+# Evita que el trailer de Cursor aparezca en GitHub como segundo contribuidor.
+case "$2" in
+  message|template) ;;
+  *)
+    if [ -f "$1" ]; then
+      sed -i.bak '/^Co-authored-by: Cursor <cursoragent@cursor.com>/d' "$1" 2>/dev/null \
+        || sed -i '' '/^Co-authored-by: Cursor <cursoragent@cursor.com>/d' "$1"
+      rm -f "$1.bak"
+    fi
+    ;;
+esac
