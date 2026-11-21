@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -51,6 +53,20 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<ErrorRespuesta> manejarMetodoNoPermitido(HttpRequestMethodNotSupportedException ex, HttpServletRequest request) {
         return construir(HttpStatus.METHOD_NOT_ALLOWED, "Método " + ex.getMethod() + " no permitido en esta ruta", request, null);
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ErrorRespuesta> manejarCredenciales(BadCredentialsException ex, HttpServletRequest request) {
+        String mensaje = ex.getMessage();
+        if (mensaje == null || mensaje.isBlank() || "Bad credentials".equals(mensaje)) {
+            mensaje = "Correo o contraseña incorrectos";
+        }
+        return construir(HttpStatus.UNAUTHORIZED, mensaje, request, null);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorRespuesta> manejarAccesoDenegado(AccessDeniedException ex, HttpServletRequest request) {
+        return construir(HttpStatus.FORBIDDEN, "No tienes permiso para realizar esta acción", request, null);
     }
 
     @ExceptionHandler(Exception.class)

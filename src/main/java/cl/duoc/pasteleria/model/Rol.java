@@ -4,5 +4,13 @@ package cl.duoc.pasteleria.model;
 public enum Rol {
     ADMIN,
     VENDEDOR,
-    CLIENTE
+    CLIENTE;
+
+    public String aJson() {
+        return name().toLowerCase();
+    }
+
+    public static Rol desdeJson(String texto) {
+        return valueOf(texto.toUpperCase());
+    }
 }
