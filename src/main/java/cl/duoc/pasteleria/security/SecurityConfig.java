@@ -58,7 +58,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/v1/mensajes").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/boletas").hasAnyRole("CLIENTE", "ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/v1/boletas/mis-boletas").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/boletas/usuario/*").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/v1/boletas").hasAnyRole("ADMIN", "VENDEDOR")
+                        .requestMatchers(HttpMethod.PATCH, "/api/v1/boletas/*/estado").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/v1/boletas/{id}").authenticated()
                         .anyRequest().hasRole("ADMIN"))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
