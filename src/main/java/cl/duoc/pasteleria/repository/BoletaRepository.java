@@ -11,4 +11,6 @@ import cl.duoc.pasteleria.model.Boleta;
 public interface BoletaRepository extends JpaRepository<Boleta, Long> {
 
     List<Boleta> findByUsuarioIdOrderByFechaDesc(Long usuarioId);
+
+    boolean existsByUsuarioId(Long usuarioId);
 }
