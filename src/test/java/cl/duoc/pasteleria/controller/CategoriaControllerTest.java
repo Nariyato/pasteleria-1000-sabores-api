@@ -19,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -26,12 +28,18 @@ import cl.duoc.pasteleria.dto.CategoriaResponse;
 import cl.duoc.pasteleria.exception.GlobalExceptionHandler;
 import cl.duoc.pasteleria.exception.RecursoNoEncontradoException;
 import cl.duoc.pasteleria.exception.ReglaNegocioException;
+import cl.duoc.pasteleria.security.JwtFilter;
+import cl.duoc.pasteleria.security.JwtService;
+import cl.duoc.pasteleria.security.RespuestaAccesoDenegado;
+import cl.duoc.pasteleria.security.RespuestaNoAutenticado;
 import cl.duoc.pasteleria.security.SecurityConfig;
 import cl.duoc.pasteleria.service.CategoriaService;
 
 /** Prueba solo la capa web: el service va simulado (mock), no se toca la base de datos. */
 @WebMvcTest(CategoriaController.class)
-@Import({ SecurityConfig.class, GlobalExceptionHandler.class })
+@Import({ SecurityConfig.class, JwtFilter.class, RespuestaNoAutenticado.class, RespuestaAccesoDenegado.class,
+        GlobalExceptionHandler.class })
+@WithMockUser(roles = "ADMIN")
 class CategoriaControllerTest {
 
     private static final String RUTA = "/api/v1/categorias";
@@ -42,6 +50,12 @@ class CategoriaControllerTest {
 
     @MockitoBean
     private CategoriaService categoriaService;
+
+    @MockitoBean
+    private JwtService jwtService;
+
+    @MockitoBean
+    private UserDetailsService userDetailsService;
 
     @Test
     void listarResponde200ConLaLista() throws Exception {
