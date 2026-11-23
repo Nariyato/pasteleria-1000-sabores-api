@@ -99,6 +99,22 @@ class BoletaServiceTest {
                 new BoletaRequest.Despacho("Ana", "Calle 1", "Maipú", HOY.plusDays(1)));
     }
 
+    private Boleta boletaMinima(long id, Usuario titular) {
+        return Boleta.builder()
+                .id(id)
+                .numero("B-" + String.format("%06d", id))
+                .usuario(titular)
+                .estado(EstadoBoleta.PREPARACION)
+                .fecha(Instant.parse("2026-01-01T12:00:00Z"))
+                .subtotal(5000)
+                .descuento(0)
+                .costoDespacho(Descuentos.COSTO_DESPACHO)
+                .total(5000 + Descuentos.COSTO_DESPACHO)
+                .detalles(new ArrayList<>())
+                .detalleDescuento(new ArrayList<>())
+                .build();
+    }
+
     @Test
     void compraSinDescuentosSumaDespacho() {
         Categoria cat = Categoria.builder().id(4L).nombre("Pastelería").build();
@@ -392,5 +408,75 @@ class BoletaServiceTest {
         verify(boletaRepository).save(captor.capture());
         assertThat(captor.getValue().getDetalles().get(0).getPrecioUnitario())
                 .isEqualTo(Descuentos.precioConOferta(45000, 10000, 10));
+    }
+
+    @Test
+    void listarDevuelveTodasLasBoletas() {
+        Usuario rosa = cliente("rosa@gmail.com", LocalDate.of(1990, 1, 1), null, Rol.CLIENTE);
+        Usuario camila = cliente("camila@duocuc.cl", LocalDate.of(2004, 11, 16), null, Rol.CLIENTE);
+        camila.setId(2L);
+        Boleta b1 = boletaMinima(1L, rosa);
+        Boleta b2 = boletaMinima(2L, camila);
+
+        when(boletaRepository.findAll()).thenReturn(List.of(b1, b2));
+
+        List<BoletaResponse> lista = boletaService.listar();
+
+        assertThat(lista).hasSize(2);
+        assertThat(lista.get(0).numero()).isEqualTo("B-000001");
+        assertThat(lista.get(1).cliente().email()).isEqualTo("camila@duocuc.cl");
+    }
+
+    @Test
+    void listarMiasSoloDelUsuarioAutenticado() {
+        Usuario rosa = cliente("rosa@gmail.com", LocalDate.of(1990, 1, 1), null, Rol.CLIENTE);
+        Boleta propia = boletaMinima(5L, rosa);
+
+        when(usuarioRepository.findByEmailIgnoreCase(rosa.getEmail())).thenReturn(Optional.of(rosa));
+        when(boletaRepository.findByUsuarioIdOrderByFechaDesc(1L)).thenReturn(List.of(propia));
+
+        List<BoletaResponse> lista = boletaService.listarMias(rosa.getEmail());
+
+        assertThat(lista).hasSize(1);
+        assertThat(lista.get(0).id()).isEqualTo(5L);
+    }
+
+    @Test
+    void clienteVeSuPropiaBoleta() {
+        Usuario rosa = cliente("rosa@gmail.com", LocalDate.of(1990, 1, 1), null, Rol.CLIENTE);
+        Boleta propia = boletaMinima(7L, rosa);
+
+        when(boletaRepository.findById(7L)).thenReturn(Optional.of(propia));
+        when(usuarioRepository.findByEmailIgnoreCase(rosa.getEmail())).thenReturn(Optional.of(rosa));
+
+        BoletaResponse r = boletaService.obtener(7L, rosa.getEmail());
+
+        assertThat(r.id()).isEqualTo(7L);
+        assertThat(r.cliente().email()).isEqualTo(rosa.getEmail());
+    }
+
+    @Test
+    void obtenerBoletaInexistente404() {
+        when(boletaRepository.findById(404L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> boletaService.obtener(404L, "rosa@gmail.com"))
+                .isInstanceOf(RecursoNoEncontradoException.class);
+    }
+
+    @Test
+    void cambiarEstadoBoletaInexistente404() {
+        when(boletaRepository.findById(99L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> boletaService.cambiarEstado(99L, new EstadoRequest("entregado")))
+                .isInstanceOf(RecursoNoEncontradoException.class);
+    }
+
+    @Test
+    void crearConUsuarioInexistente404() {
+        when(usuarioRepository.findByEmailIgnoreCase("nadie@test.cl")).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> boletaService.crear("nadie@test.cl", requestSimple("PT001", 1)))
+                .isInstanceOf(RecursoNoEncontradoException.class);
+        verify(boletaRepository, never()).save(any());
     }
 }
