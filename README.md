@@ -1,7 +1,7 @@
 # Pastelería 1000 Sabores – API REST
 
-Backend del proyecto **Pastelería 1000 Sabores** (Duoc UC, DSY1104 Desarrollo Fullstack II, Evaluación 3).
-Reemplaza el `localStorage` del front (React + Vite) por una API REST en Spring Boot con base de datos MySQL.
+API REST de **Pastelería 1000 Sabores** (Duoc UC, DSY1104). Persiste en MySQL los datos que consume el
+front en React + Vite.
 
 - Front: <https://github.com/AlanisVerdugo/Pasteleria-1000-sabores>
 - Rutas versionadas: `/api/v1/...`
@@ -135,7 +135,7 @@ El botón **Authorize** ya está configurado para pegar un token JWT (esquema `b
 
 Usan una base H2 en memoria, no necesitan MySQL (`src/test/resources/application.properties`).
 
-En Windows: `.\mvnw.cmd test`. La suite actual en `main` incluye pruebas por módulo (service, controller e integración con tokens reales donde corresponde): auth, categorías, productos, usuarios, boletas, blog, mensajes y `DescuentosTest`.
+En Windows: `.\mvnw.cmd test`. Usan H2 en memoria; cubren auth, categorías, productos, usuarios, boletas, blog, mensajes y reglas de descuento (unitarias, controller e integración con JWT donde aplica).
 
 ## Usuarios de prueba
 
@@ -160,11 +160,11 @@ cl.duoc.pasteleria
 ├── model        Entidades JPA (las tablas)
 ├── repository   Interfaces de acceso a datos (Spring Data JPA)
 ├── security     JwtService, JwtFilter, SecurityConfig (CORS, reglas por rol), 401/403 en JSON
-├── util         Descuentos (reglas de la compra, Fase D)
+├── util         Descuentos (reglas de la compra en el servidor)
 └── service      Lógica de negocio
 ```
 
-Cada módulo sigue el camino **Controller → Service → Repository** con DTOs de entrada y salida. El módulo de **Categorías** es la referencia para copiar la forma; Blog y Mensajes (Fase E) siguen ese patrón.
+Cada módulo sigue **Controller → Service → Repository** con DTOs de entrada y salida.
 
 ## Modelo de datos
 
@@ -188,24 +188,18 @@ Todos los errores salen con el mismo formato:
 
 El campo `errores` solo aparece en las validaciones (400). Los demás códigos son 404 (no existe), 409 (regla de negocio) y 500.
 
-## Estado del proyecto
+## Módulos de la API
 
-**Backend en `main` (EV3):** módulos listos en Swagger bajo `/api/v1`:
+Rutas bajo `/api/v1` (detalle en Swagger):
 
-| Módulo | Endpoints | Notas |
-| :--- | :--- | :--- |
-| Auth | login, registro, refresh, me, perfil | JWT access + refresh, roles |
-| Categorías | CRUD | Referencia de capas |
-| Productos | 9 rutas | Catálogo público; críticos solo ADMIN |
-| Usuarios | CRUD | Solo ADMIN; sin `password` en JSON |
-| Boletas | compra, listados, estado | Descuentos y stock en el servidor |
-| Blog | GET público; POST/PUT/DELETE ADMIN | Fase E (Alanis) |
-| Mensajes | POST público; GET/DELETE ADMIN | Fase E (Benjamin); `usuarioId` desde el token |
+| Módulo | Qué ofrece |
+| :--- | :--- |
+| Auth | Login, registro, refresh, perfil y usuario actual (JWT) |
+| Categorías | CRUD (catálogo) |
+| Productos | Listados públicos, filtros, ofertas, críticos (ADMIN), mantenimiento |
+| Usuarios | CRUD solo ADMIN (sin contraseña en las respuestas) |
+| Boletas | Compra, listados, mis pedidos, cambio de estado (ADMIN) |
+| Blog | Lectura pública; mantenimiento ADMIN |
+| Mensajes | Contacto público; bandeja y borrado ADMIN |
 
-`.\mvnw.cmd test` en verde (**205** pruebas en `main`). Detalle para estudiar: `docs/Guia_estudio_proyecto.md`.
-
-**EV3 en código (`main`):** Fases **C → H** fusionadas (JWT, productos, usuarios, boletas, blog, mensajes, Docker, refuerzo de pruebas). PRs: Docker (#7), pruebas (#8).
-
-**Front (`Pasteleria-1000-sabores`, `main`):** integración API completa (F1–F9, checklist F7). **359** pruebas Vitest; consumo real vía `VITE_API_URL`.
-
-**Pendiente (Fase I — entregables):** Word/PDF de APIs e integración, manual (Alanis), ERS v3 y Excel 39 APIs (Benjamin), zips con `git archive`, capturas con esta versión de `main`.
+**Roles:** `ADMIN` (panel completo), `VENDEDOR` (productos y boletas en lectura), `CLIENTE` (tienda y compra).
