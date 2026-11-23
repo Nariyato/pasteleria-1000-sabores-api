@@ -202,10 +202,10 @@ El campo `errores` solo aparece en las validaciones (400). Los demás códigos s
 | Blog | GET público; POST/PUT/DELETE ADMIN | Fase E (Alanis) |
 | Mensajes | POST público; GET/DELETE ADMIN | Fase E (Benjamin); `usuarioId` desde el token |
 
-`.\mvnw.cmd test` en verde (~199 pruebas). Detalle para estudiar: `docs/Guia_estudio_proyecto.md`.
+`.\mvnw.cmd test` en verde (**205** pruebas en `main`). Detalle para estudiar: `docs/Guia_estudio_proyecto.md`.
 
-**Pendiente en el plan EV3 (Alan / equipo):**
+**EV3 en código (`main`):** Fases **C → H** fusionadas (JWT, productos, usuarios, boletas, blog, mensajes, Docker, refuerzo de pruebas). PRs: Docker (#7), pruebas (#8).
 
-- **Fase G (rama `p1/docker`):** CORS y JWT por variables; `docker compose up --build` (probar con front tras levantar contenedores).
-- **Front:** integración en `pasteleria_sabores` (rama `p1/integracion-api`); **F7** hecho contra API local.
-- **Entregables I/J:** documentos, tabla Excel de APIs, demo ensayada.
+**Front (`Pasteleria-1000-sabores`, `main`):** integración API completa (F1–F9, checklist F7). **359** pruebas Vitest; consumo real vía `VITE_API_URL`.
+
+**Pendiente (Fase I — entregables):** Word/PDF de APIs e integración, manual (Alanis), ERS v3 y Excel 39 APIs (Benjamin), zips con `git archive`, capturas con esta versión de `main`.
