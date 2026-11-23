@@ -2,6 +2,7 @@ package cl.duoc.pasteleria.security;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -68,11 +69,12 @@ public class SecurityConfig {
         return http.build();
     }
 
-    /** Permite que el front de Vite (localhost:5173) llame a la API. */
+    /** Orígenes permitidos vía `cors.origenes` / variable `CORS_ORIGENES`. */
     @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
+    public CorsConfigurationSource corsConfigurationSource(
+            @Value("${cors.origenes}") List<String> origenes) {
         CorsConfiguration configuracion = new CorsConfiguration();
-        configuracion.setAllowedOrigins(List.of("http://localhost:5173"));
+        configuracion.setAllowedOrigins(origenes);
         configuracion.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuracion.setAllowedHeaders(List.of("*"));
 

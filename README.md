@@ -51,6 +51,18 @@ Levanta la API con una base en memoria. Los datos se borran al apagarla:
 docker compose up --build
 ```
 
+En Windows: `docker compose up --build`. La API queda en el mismo puerto **8089**; MySQL usa el host **`db`** dentro de la red de Docker (no `localhost`).
+
+Variables opcionales (ver `.env.example`; el `.env` no se sube al repo):
+
+| Variable | Uso |
+| :--- | :--- |
+| `DB_PASSWORD` | Contraseña root de MySQL (por defecto `root`) |
+| `JWT_SECRET` | Clave JWT (en desarrollo hay valor por defecto en compose) |
+| `CORS_ORIGENES` | Orígenes del front, separados por coma (por defecto `http://localhost:5173`) |
+
+Desde cero (borra datos locales del volumen): `docker compose down -v` y luego `docker compose up --build`. La primera compilación dentro de la imagen puede tardar varios minutos.
+
 ## Problemas al arrancar
 
 Si `spring-boot:run` termina con `BUILD FAILURE` pero la compilación fue bien, revisa el final del log:
@@ -194,6 +206,6 @@ El campo `errores` solo aparece en las validaciones (400). Los demás códigos s
 
 **Pendiente en el plan EV3 (Alan / equipo):**
 
-- **Fase G:** API + MySQL con `docker compose up --build` (CORS y `JWT_SECRET` por variables).
-- **Front:** integración en `pasteleria_sabores` (rama `p1/integracion-api`); checklist manual **F7** con API en 8089.
+- **Fase G (rama `p1/docker`):** CORS y JWT por variables; `docker compose up --build` (probar con front tras levantar contenedores).
+- **Front:** integración en `pasteleria_sabores` (rama `p1/integracion-api`); **F7** hecho contra API local.
 - **Entregables I/J:** documentos, tabla Excel de APIs, demo ensayada.
