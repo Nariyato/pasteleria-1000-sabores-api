@@ -25,6 +25,8 @@ services:
       DB_URL: jdbc:mysql://db:3306/pasteleria?serverTimezone=America/Santiago&useSSL=false&allowPublicKeyRetrieval=true
       DB_USER: root
       DB_PASSWORD: ${DB_PASSWORD:-root}
+      JWT_SECRET: ${JWT_SECRET:-clave-de-desarrollo-pasteleria-1000-sabores-no-usar-en-produccion}
+      CORS_ORIGENES: ${CORS_ORIGENES:-http://localhost:5173}
     ports:
       - "8089:8089"
 
