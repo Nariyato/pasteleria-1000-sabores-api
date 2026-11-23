@@ -6,7 +6,7 @@ Reemplaza el `localStorage` del front (React + Vite) por una API REST en Spring 
 - Front: <https://github.com/AlanisVerdugo/Pasteleria-1000-sabores>
 - Rutas versionadas: `/api/v1/...`
 - Documentación interactiva con Swagger
-- Seguridad con Spring Security y JWT (roles ADMIN, VENDEDOR y CLIENTE): **pendiente de implementar**, ver "Estado del proyecto"
+- Seguridad con Spring Security y JWT (roles ADMIN, VENDEDOR y CLIENTE)
 
 ## Requisitos
 
@@ -121,11 +121,9 @@ El botón **Authorize** ya está configurado para pegar un token JWT (esquema `b
 ./mvnw test
 ```
 
-Usan una base H2 en memoria, no necesitan MySQL. Incluyen:
+Usan una base H2 en memoria, no necesitan MySQL (`src/test/resources/application.properties`).
 
-- `CategoriaServiceTest`: pruebas unitarias del service con Mockito.
-- `CategoriaControllerTest`: pruebas del controller con MockMvc (`@WebMvcTest`).
-- `CategoriaIntegracionTest`: arranca toda la app con H2 y prueba la API de punta a punta.
+En Windows: `.\mvnw.cmd test`. La suite actual en `main` incluye pruebas por módulo (service, controller e integración con tokens reales donde corresponde): auth, categorías, productos, usuarios, boletas, blog, mensajes y `DescuentosTest`.
 
 ## Usuarios de prueba
 
@@ -149,12 +147,12 @@ cl.duoc.pasteleria
 ├── exception    Excepciones propias y GlobalExceptionHandler (formato único de errores)
 ├── model        Entidades JPA (las tablas)
 ├── repository   Interfaces de acceso a datos (Spring Data JPA)
-├── security     SecurityConfig (CORS, sesión sin estado, BCrypt). Aquí irán JwtService y JwtFilter
+├── security     JwtService, JwtFilter, SecurityConfig (CORS, reglas por rol), 401/403 en JSON
+├── util         Descuentos (reglas de la compra, Fase D)
 └── service      Lógica de negocio
 ```
 
-Cada módulo sigue el camino **Controller → Service → Repository**. El módulo de **Categorías** está completo
-y es la referencia: para crear Productos, Boletas, etc. se copia su forma.
+Cada módulo sigue el camino **Controller → Service → Repository** con DTOs de entrada y salida. El módulo de **Categorías** es la referencia para copiar la forma; Blog y Mensajes (Fase E) siguen ese patrón.
 
 ## Modelo de datos
 
@@ -180,16 +178,22 @@ El campo `errores` solo aparece en las validaciones (400). Los demás códigos s
 
 ## Estado del proyecto
 
-Hecho:
+**Backend en `main` (EV3):** módulos listos en Swagger bajo `/api/v1`:
 
-- Estructura del proyecto, entidades, repositorios y datos iniciales.
-- Módulo de Categorías completo (CRUD, validaciones, Swagger y pruebas).
-- Manejo global de errores, CORS para `http://localhost:5173` y Swagger.
+| Módulo | Endpoints | Notas |
+| :--- | :--- | :--- |
+| Auth | login, registro, refresh, me, perfil | JWT access + refresh, roles |
+| Categorías | CRUD | Referencia de capas |
+| Productos | 9 rutas | Catálogo público; críticos solo ADMIN |
+| Usuarios | CRUD | Solo ADMIN; sin `password` en JSON |
+| Boletas | compra, listados, estado | Descuentos y stock en el servidor |
+| Blog | GET público; POST/PUT/DELETE ADMIN | Fase E (Alanis) |
+| Mensajes | POST público; GET/DELETE ADMIN | Fase E (Benjamin); `usuarioId` desde el token |
 
-Pendiente:
+`.\mvnw.cmd test` en verde (~199 pruebas). Detalle para estudiar: `docs/Guia_estudio_proyecto.md`.
 
-- JWT: login, registro, `me` y renovación del token (`refresh`).
-- Reglas de seguridad por rol en `SecurityConfig` (hoy todo está en `permitAll`).
-- CRUD de productos, boletas, usuarios, blog y mensajes.
-- Lógica de negocio de las compras (descuentos, descuento de stock y totales).
-- Pruebas de esos módulos y conexión del front.
+**Pendiente en el plan EV3 (Alan / equipo):**
+
+- **Fase G:** API + MySQL con `docker compose up --build` (CORS y `JWT_SECRET` por variables).
+- **Front:** integración en `pasteleria_sabores` (rama `p1/integracion-api`); checklist manual **F7** con API en 8089.
+- **Entregables I/J:** documentos, tabla Excel de APIs, demo ensayada.
