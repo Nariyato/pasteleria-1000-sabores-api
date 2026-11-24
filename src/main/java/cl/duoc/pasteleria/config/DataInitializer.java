@@ -99,7 +99,7 @@ public class DataInitializer implements CommandLineRunner {
                         LocalDate.of(1998, 7, 20), Rol.CLIENTE, "FELICES50", registro),
                 usuario("212345679", "Camila", "Pérez Soto", "camila@duocuc.cl", "1234",
                         cumpleCamila, Rol.CLIENTE, null, registro),
-                usuario("177777771", "Vera", "Vendedora Sabores", "vendedor@pasteleria.cl", "vendedor123",
+                usuario("177777771", "Vera", "Vendedora Sabores", "vendedor@pasteleria.cl", "vendedor1",
                         LocalDate.of(1995, 5, 5), Rol.VENDEDOR, null, registro)));
     }
 

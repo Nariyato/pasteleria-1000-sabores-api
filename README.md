@@ -142,7 +142,7 @@ En Windows: `.\mvnw.cmd test`. Usan H2 en memoria; cubren auth, categorías, pro
 | Rol | Correo | Contraseña |
 |---|---|---|
 | ADMIN | admin@duoc.cl | admin123 |
-| VENDEDOR | vendedor@pasteleria.cl | vendedor123 |
+| VENDEDOR | vendedor@pasteleria.cl | vendedor1 |
 | CLIENTE | rosa@gmail.com | 1234 |
 | CLIENTE (código FELICES50) | pedro@gmail.com | 1234 |
 | CLIENTE (Duoc, cumple hoy) | camila@duocuc.cl | 1234 |

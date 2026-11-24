@@ -39,7 +39,7 @@ class UsuarioIntegracionTest {
 
     @Test
     void vendedorNoPuedeCrearUsuario() throws Exception {
-        String access = loginAccess("vendedor@pasteleria.cl", "vendedor123");
+        String access = loginAccess("vendedor@pasteleria.cl", "vendedor1");
         String json =
                 "{\"run\":\"999999990\",\"nombre\":\"Extra\",\"apellidos\":\"Test\",\"email\":\"extra@test.cl\","
                         + "\"fechaNacimiento\":\"1990-01-01\",\"password\":\"1234\",\"rol\":\"cliente\"}";

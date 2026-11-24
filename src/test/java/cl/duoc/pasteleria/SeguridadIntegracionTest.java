@@ -95,7 +95,7 @@ class SeguridadIntegracionTest {
 
     @Test
     void vendedorNoPuedeCrearCategoria() throws Exception {
-        String access = loginAccess("vendedor@pasteleria.cl", "vendedor123");
+        String access = loginAccess("vendedor@pasteleria.cl", "vendedor1");
         mockMvc.perform(post("/api/v1/categorias")
                         .header("Authorization", "Bearer " + access)
                         .contentType(MediaType.APPLICATION_JSON)

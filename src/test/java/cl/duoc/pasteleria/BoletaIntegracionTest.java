@@ -68,7 +68,7 @@ class BoletaIntegracionTest {
         int stockDespues = mapper.readTree(productoDespues.getResponse().getContentAsString()).get("stock").asInt();
         assertThat(stockDespues).isEqualTo(stockAntes - 2);
 
-        String vendedor = loginAccess("vendedor@pasteleria.cl", "vendedor123");
+        String vendedor = loginAccess("vendedor@pasteleria.cl", "vendedor1");
         mockMvc.perform(get("/api/v1/boletas").header("Authorization", "Bearer " + vendedor))
                 .andExpect(status().isOk());
         mockMvc.perform(patch("/api/v1/boletas/" + boletaId + "/estado")

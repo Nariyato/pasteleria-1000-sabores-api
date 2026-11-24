@@ -64,7 +64,7 @@ class ProductoIntegracionTest {
 
     @Test
     void vendedorPuedeListarTodosPeroNoCrear() throws Exception {
-        String vendedor = loginAccess("vendedor@pasteleria.cl", "vendedor123");
+        String vendedor = loginAccess("vendedor@pasteleria.cl", "vendedor1");
         mockMvc.perform(get("/api/v1/productos/todos").header("Authorization", "Bearer " + vendedor))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(org.hamcrest.Matchers.greaterThanOrEqualTo(16)));
